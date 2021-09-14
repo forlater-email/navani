@@ -40,6 +40,7 @@ func main() {
 				log.Println(err)
 			}
 		}
+		log.Printf("sent mail to %s\n", m.From)
 		w.WriteHeader(204)
 	})
 

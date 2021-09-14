@@ -1,6 +1,7 @@
 package reader
 
 import (
+	"bytes"
 	"crypto/sha1"
 	"encoding/hex"
 	"fmt"
@@ -12,6 +13,11 @@ import (
 	"git.icyphox.sh/forlater/navani/cache"
 	readability "github.com/go-shiori/go-readability"
 )
+
+type Article struct {
+	readability.Article
+	URL *url.URL
+}
 
 func checksum(s []byte) string {
 	h := sha1.New()
@@ -33,21 +39,27 @@ func Fetch(url string) (io.Reader, error) {
 		if err != nil {
 			return nil, err
 		}
-		if b, err := io.ReadAll(resp.Body); err == nil {
-			c.Set(sum, b)
+		buf := bytes.Buffer{}
+		// Read into r and write into buf.
+		// Cache and return!
+		r := io.TeeReader(resp.Body, &buf)
+		b, err := io.ReadAll(r)
+		if err != nil {
+			c.Set(b)
 		}
-		return resp.Body, nil
+		return &buf, nil
 	}
+
 	return strings.NewReader(body), nil
 }
 
 // Makes a given html body readable. Returns an error if it
 // can't.
-func Readable(r io.Reader, u *url.URL) (readability.Article, error) {
+func Readable(r io.Reader, u *url.URL) (Article, error) {
 	article, err := readability.FromReader(r, u)
 	if err != nil {
-		return readability.Article{}, fmt.Errorf("failed to parse %s: %v\n", u, err)
+		return Article{}, fmt.Errorf("failed to parse %s: %v\n", u, err)
 	}
 
-	return article, nil
+	return Article{article, u}, nil
 }

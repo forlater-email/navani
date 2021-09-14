@@ -5,7 +5,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/go-shiori/go-readability"
+	"git.icyphox.sh/forlater/navani/reader"
 	"github.com/joegrasse/mail"
 	"github.com/joho/godotenv"
 )
@@ -17,7 +17,7 @@ func init() {
 	}
 }
 
-func SendArticle(article *readability.Article, to string) error {
+func SendArticle(article *reader.Article, to string) error {
 	var (
 		EMAIL_USER_SECRET = os.Getenv("EMAIL_USER_SECRET")
 		EMAIL_PASSWORD    = os.Getenv("EMAIL_PASSWORD")
@@ -26,17 +26,22 @@ func SendArticle(article *readability.Article, to string) error {
 		SMTP_PORT         = os.Getenv("SMTP_PORT")
 	)
 
+	htmlContent, err := RenderTemplate("html.tpl", article)
+	if err != nil {
+		return err
+	}
+
 	email := mail.New()
 	email.Encryption = mail.EncryptionTLS
 	email.SetFrom(fmt.Sprintf("saved forlater <%s>", EMAIL_FROM))
 	email.AddTo(to)
 	email.SetSubject(article.Title)
 	email.SetBody("text/plain", article.TextContent)
-	email.AddAlternative("text/html", article.Content)
+	email.AddAlternative("text/html", string(htmlContent))
 	email.Username = EMAIL_USER_SECRET
 	email.Password = EMAIL_PASSWORD
 
-	err := email.Send(SMTP_HOST + ":" + SMTP_PORT)
+	err = email.Send(SMTP_HOST + ":" + SMTP_PORT)
 	if err != nil {
 		return err
 	}
