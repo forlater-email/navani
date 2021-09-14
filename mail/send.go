@@ -31,12 +31,14 @@ func SendArticle(article *reader.Article, to string) error {
 		return err
 	}
 
+	plainContent, err := reader.MakePlaintext(htmlContent)
+
 	email := mail.New()
 	email.Encryption = mail.EncryptionTLS
 	email.SetFrom(fmt.Sprintf("saved forlater <%s>", EMAIL_FROM))
 	email.AddTo(to)
 	email.SetSubject(article.Title)
-	email.SetBody("text/plain", article.TextContent)
+	email.SetBody("text/plain", string(plainContent))
 	email.AddAlternative("text/html", string(htmlContent))
 	email.Username = EMAIL_USER_SECRET
 	email.Password = EMAIL_PASSWORD
