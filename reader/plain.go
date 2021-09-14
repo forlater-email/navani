@@ -6,8 +6,8 @@ import (
 )
 
 func MakePlaintext(html []byte) ([]byte, error) {
-	args := []string{"-T", "text/html", "-dump"}
-	cmd := exec.Command("w3m", args...)
+	args := []string{"-image_links", "-dump", "-stdin"}
+	cmd := exec.Command("lynx", args...)
 	cmd.Stdin = strings.NewReader(string(html))
 	out, err := cmd.Output()
 	if err != nil {
