@@ -15,6 +15,7 @@ func main() {
 		m := mail.Mail{}
 		json.NewDecoder(r.Body).Decode(&m)
 		body, err := mail.MailBody(m.Parts)
+		log.Printf("recieved webhook: %v\n", m)
 		if err != nil {
 			log.Println(err)
 		}
@@ -22,25 +23,25 @@ func main() {
 		for _, u := range distinct(mail.ExtractURLs(body)) {
 			parsedURL, err := url.Parse(u)
 			if err != nil {
-				log.Println(err)
+				log.Printf("url parse: %s\n", err)
 			}
 
 			f, err := reader.Fetch(parsedURL.String())
 			if err != nil {
-				log.Println(err)
+				log.Printf("reader fetch: %s\n", err)
 			}
 
 			article, err := reader.Readable(f, parsedURL)
 			if err != nil {
-				log.Println(err)
+				log.Printf("not readable: %s\n", err)
 			}
 
 			err = mail.SendArticle(&article, m.From)
 			if err != nil {
 				log.Println(err)
 			}
+			log.Printf("sent mail to %s: %s\n", m.From, article.Title)
 		}
-		log.Printf("sent mail to %s\n", m.From)
 		w.WriteHeader(204)
 	})
 
