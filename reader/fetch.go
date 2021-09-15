@@ -56,9 +56,12 @@ func Fetch(url string) (io.Reader, error) {
 // Makes a given html body readable. Returns an error if it
 // can't.
 func Readable(r io.Reader, u *url.URL) (Article, error) {
+	if !readability.Check(r) {
+		return Article{readability.Article{}, u}, fmt.Errorf("failed to parse %s", u)
+	}
 	article, err := readability.FromReader(r, u)
 	if err != nil {
-		return Article{}, fmt.Errorf("failed to parse %s: %v\n", u, err)
+		return Article{readability.Article{}, u}, fmt.Errorf("failed to parse %s: %v\n", u, err)
 	}
 
 	return Article{article, u}, nil

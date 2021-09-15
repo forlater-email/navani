@@ -17,7 +17,7 @@ func init() {
 	}
 }
 
-func SendArticle(article *reader.Article, to string) error {
+func SendArticle(article *reader.Article, to string, readable bool) error {
 	var (
 		EMAIL_USER_SECRET = os.Getenv("EMAIL_USER_SECRET")
 		EMAIL_PASSWORD    = os.Getenv("EMAIL_PASSWORD")
@@ -37,9 +37,17 @@ func SendArticle(article *reader.Article, to string) error {
 	email.Encryption = mail.EncryptionTLS
 	email.SetFrom(fmt.Sprintf("saved forlater <%s>", EMAIL_FROM))
 	email.AddTo(to)
-	email.SetSubject(article.Title)
-	email.SetBody("text/plain", string(plainContent))
-	email.AddAlternative("text/html", string(htmlContent))
+	if readable {
+		email.SetSubject(article.Title)
+		email.SetBody("text/plain", string(plainContent))
+		email.AddAlternative("text/html", string(htmlContent))
+	} else {
+		email.SetSubject(article.URL.String())
+		email.SetBody("text/plain", fmt.Sprintf(
+			"We were unable to parse your link: %s",
+			article.URL.String(),
+		))
+	}
 	email.Username = EMAIL_USER_SECRET
 	email.Password = EMAIL_PASSWORD
 

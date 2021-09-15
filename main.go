@@ -32,15 +32,20 @@ func main() {
 			}
 
 			article, err := reader.Readable(f, parsedURL)
-			if err != nil {
+			if err == nil {
+				err = mail.SendArticle(&article, m.From, true)
+				if err != nil {
+					log.Printf("error sending mail to: %s: %v\n", m.From, err)
+				} else {
+					log.Printf("sent mail to %s: %s\n", m.From, article.Title)
+				}
+			} else {
 				log.Printf("not readable: %s\n", err)
+				err := mail.SendArticle(&article, m.From, false)
+				if err != nil {
+					log.Printf("error sending mail to: %s: %v\n", m.From, err)
+				}
 			}
-
-			err = mail.SendArticle(&article, m.From)
-			if err != nil {
-				log.Println(err)
-			}
-			log.Printf("sent mail to %s: %s\n", m.From, article.Title)
 		}
 		w.WriteHeader(204)
 	})
