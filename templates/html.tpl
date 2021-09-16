@@ -33,7 +33,7 @@
                     <tr>
                     <td style="padding:20px 0;">
                   <![endif]-->
-                  <div class="outer" style="width:96%;max-width:660px;margin:20px auto;font-family: serif;">
+                  <div class="outer" style="width:96%;max-width:660px;margin:20px auto;font-family: sans-serif;">
                     <em>original link</em>: <a href="{{ .URL }}">{{ .URL }}</a>
                     <h1>
                       {{ .Title }}
