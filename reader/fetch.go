@@ -31,13 +31,16 @@ func checksum(s []byte) string {
 func Fetch(url string) (io.Reader, error) {
 	sum := checksum([]byte(url))
 	c, err := cache.NewConn()
+	if err != nil {
+		return nil, fmt.Errorf("cache error: %w", err)
+	}
 
 	body, err := c.Get(sum)
 	// Not in cache.
 	if err != nil {
 		resp, err := http.Get(url)
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("http error: %w", err)
 		}
 		buf := bytes.Buffer{}
 		// Read into r and write into buf.
@@ -45,7 +48,11 @@ func Fetch(url string) (io.Reader, error) {
 		r := io.TeeReader(resp.Body, &buf)
 		b, err := io.ReadAll(r)
 		if err != nil {
-			c.Set(b)
+			return nil, fmt.Errorf("io error: %w", err)
+		}
+		_, err = c.Set(sum, b)
+		if err != nil {
+			return nil, fmt.Errorf("cache error: %w", err)
 		}
 		return &buf, nil
 	}
@@ -56,12 +63,10 @@ func Fetch(url string) (io.Reader, error) {
 // Makes a given html body readable. Returns an error if it
 // can't.
 func Readable(r io.Reader, u *url.URL) (Article, error) {
-	if !readability.Check(r) {
-		return Article{readability.Article{}, u}, fmt.Errorf("failed to parse %s", u)
-	}
 	article, err := readability.FromReader(r, u)
+	fmt.Println("article", article)
 	if err != nil {
-		return Article{readability.Article{}, u}, fmt.Errorf("failed to parse %s: %v\n", u, err)
+		return Article{readability.Article{}, u}, fmt.Errorf("failed to parse %s: %w\n", u, err)
 	}
 
 	return Article{article, u}, nil

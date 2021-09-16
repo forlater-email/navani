@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"net/url"
@@ -33,6 +34,7 @@ func main() {
 
 			article, err := reader.Readable(f, parsedURL)
 			if err == nil {
+				fmt.Println("here")
 				err = mail.SendArticle(&article, m.From, true)
 				if err != nil {
 					log.Printf("error sending mail to: %s: %v\n", m.From, err)
