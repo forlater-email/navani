@@ -1,52 +1,57 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Transitional //EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
+<!DOCTYPE html>
+<html lang="en" xmlns="https://www.w3.org/1999/xhtml" xmlns:o="urn:schemas-microsoft-com:office:office">
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="x-apple-disable-message-reformatting">
-  
-  <style type="text/css">
-    img, video {
-       align: center;
-       object-fit: cover;
-       width: 400px;
-       height: 200px;
-    }
-
-    body {
-      margin: 0;
-      padding: 0;
-      max-width: 640px;
-    }
-    a[x-apple-data-detectors='true'] {
-      color: inherit !important;
-      text-decoration: none !important;
-    }
-
-    .page {
-      font-family: serif;
-    }
-  </style>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="x-apple-disable-message-reformatting">
+    <!--[if !mso]><!-->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <!--<![endif]-->
+    <title></title>
+    <!--[if mso]>
+    <style type="text/css">
+        table {border-collapse:collapse;border-spacing:0;margin:0;}
+        div, td {padding:0;}
+        div {margin:0 !important;}
+    </style>
+    <noscript>
+    <xml>
+        <o:OfficeDocumentSettings>
+            <o:PixelsPerInch>96</o:PixelsPerInch>
+        </o:OfficeDocumentSettings>
+    </xml>
+    </noscript>
+    <![endif]-->
 </head>
-
-
-<table width="100%" border="0" cellspacing="0" cellpadding="0">
-    <tr>
-        <td align="center">
-          <body>
-            <em>original link</em>: <a href="{{ .URL }}">{{ .URL }}</a>
-            <h1>
-              {{ .Title }}
-            </h1>
-            <h2>
-              {{ .Byline }}
-            </h2>
-            <hr>
-            {{ .Content }}
-          </body>
-
-        </td>
-    </tr>
-</table>
-
+<body style="margin:0;padding:0;word-spacing:normal;background-color:#ffffff;">
+    <div role="article" aria-roledescription="email" lang="en" style="-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%;background-color:#ffffff;">
+        <table width="100%" align="center" border="0" cellpadding="0" cellspacing="0" role="presentation">
+            <tr>
+                <td align="center">
+                  <!--[if mso]>
+                    <table role="presentation" align="center" style="width:660px;">
+                    <tr>
+                    <td style="padding:20px 0;">
+                  <![endif]-->
+                  <div class="outer" style="width:96%;max-width:660px;margin:20px auto;font-family: serif;">
+                    <em>original link</em>: <a href="{{ .URL }}">{{ .URL }}</a>
+                    <h1>
+                      {{ .Title }}
+                    </h1>
+                    <h2>
+                      {{ .Byline }}
+                    </h2>
+                    <hr>
+                    {{ .Content }}
+                  </div>
+                  <!--[if mso]>
+                    </td>
+                    </tr>
+                    </table>
+                  <![endif]-->
+                </td>
+            </tr>
+        </table>
+    </div>
+</body>
 </html>
