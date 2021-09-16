@@ -24,21 +24,29 @@
     }
 
     .page {
-        font-family: serif;
+      font-family: serif;
     }
   </style>
 </head>
 
-<body>
-  <em>original link</em>: <a href="{{ .URL }}">{{ .URL }}</a>
-  <h1>
-    {{ .Title }}
-  </h1>
-  <h2>
-    {{ .Byline }}
-  </h2>
-  <hr>
-  {{ .Content }}
-</body>
+
+<table width="100%" border="0" cellspacing="0" cellpadding="0">
+    <tr>
+        <td align="center">
+          <body>
+            <em>original link</em>: <a href="{{ .URL }}">{{ .URL }}</a>
+            <h1>
+              {{ .Title }}
+            </h1>
+            <h2>
+              {{ .Byline }}
+            </h2>
+            <hr>
+            {{ .Content }}
+          </body>
+
+        </td>
+    </tr>
+</table>
 
 </html>
