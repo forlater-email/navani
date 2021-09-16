@@ -20,7 +20,11 @@ func main() {
 			log.Println(err)
 		}
 
-		for _, u := range distinct(mail.ExtractURLs(body)) {
+		urls := mail.ExtractURLs(body)
+		if len(urls) == 0 {
+			log.Printf("no urls found")
+		}
+		for _, u := range distinct(urls) {
 			log.Printf("url: %s\n", u)
 			parsedURL, err := url.Parse(u)
 			if err != nil {
