@@ -16,12 +16,13 @@ func main() {
 		m := mail.Mail{}
 		json.NewDecoder(r.Body).Decode(&m)
 		body, err := mail.MailBody(m.Parts)
-		log.Printf("recieved webhook: %v\n", m)
+		log.Printf("recieved webhook: %v\n", m.From)
 		if err != nil {
 			log.Println(err)
 		}
 
 		for _, u := range distinct(mail.ExtractURLs(body)) {
+			log.Printf("url: %s\n", u)
 			parsedURL, err := url.Parse(u)
 			if err != nil {
 				log.Printf("url parse: %s\n", err)
