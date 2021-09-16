@@ -64,7 +64,6 @@ func Fetch(url string) (io.Reader, error) {
 // can't.
 func Readable(r io.Reader, u *url.URL) (Article, error) {
 	article, err := readability.FromReader(r, u)
-	fmt.Println("article", article)
 	if err != nil {
 		return Article{readability.Article{}, u}, fmt.Errorf("failed to parse %s: %w\n", u, err)
 	}
