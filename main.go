@@ -17,7 +17,8 @@ func main() {
 		body, err := mail.MailBody(m.Parts)
 		log.Printf("recieved webhook: %v\n", m.From)
 		if err != nil {
-			log.Println(err)
+			log.Printf("using body as is: %v\n", err)
+			body = m.Body
 		}
 
 		urls := mail.ExtractURLs(body)
@@ -28,12 +29,12 @@ func main() {
 			log.Printf("url: %s\n", u)
 			parsedURL, err := url.Parse(u)
 			if err != nil {
-				log.Printf("url parse: %s\n", err)
+				log.Printf("url parse: %v\n", err)
 			}
 
 			f, err := reader.Fetch(parsedURL.String())
 			if err != nil {
-				log.Printf("reader fetch: %s\n", err)
+				log.Printf("reader fetch: %v\n", err)
 			}
 
 			article, err := reader.Readable(f, parsedURL)
