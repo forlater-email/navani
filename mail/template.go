@@ -3,10 +3,17 @@ package mail
 import (
 	"bytes"
 	"html/template"
+	"net/url"
 	"path/filepath"
 
 	"git.icyphox.sh/forlater/navani/reader"
 )
+
+func stripQueryParams(u *url.URL) string {
+	u.RawQuery = ""
+	u.Fragment = ""
+	return u.String()
+}
 
 func RenderTemplate(file string, article *reader.Article) ([]byte, error) {
 	t, err := template.ParseGlob(filepath.Join("templates", "*.tpl"))
@@ -24,7 +31,7 @@ func RenderTemplate(file string, article *reader.Article) ([]byte, error) {
 		template.HTML(article.Content),
 		article.Title,
 		article.Byline,
-		article.URL.String(),
+		stripQueryParams(article.URL),
 	}); err != nil {
 		return nil, err
 	}
