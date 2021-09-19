@@ -55,6 +55,5 @@ func SendArticle(article *reader.Article, to string, readable bool) error {
 	if err != nil {
 		return err
 	}
-
 	return nil
 }

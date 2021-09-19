@@ -21,37 +21,46 @@ func main() {
 			body = m.Body
 		}
 
-		urls := mail.ExtractURLs(body)
-		if len(urls) == 0 {
-			log.Printf("no urls found")
+		spf, err := mail.VerifySPF(m.From)
+		if err != nil {
+			log.Printf("verify spf: %v", err)
 		}
-		for _, u := range distinct(urls) {
-			log.Printf("url: %s\n", u)
-			parsedURL, err := url.Parse(u)
-			if err != nil {
-				log.Printf("url parse: %v\n", err)
-			}
 
-			f, err := reader.Fetch(parsedURL.String())
-			if err != nil {
-				log.Printf("reader fetch: %v\n", err)
+		if spf {
+			urls := mail.ExtractURLs(body)
+			if len(urls) == 0 {
+				log.Printf("no urls found")
 			}
-
-			article, err := reader.Readable(f, parsedURL)
-			if err == nil {
-				err = mail.SendArticle(&article, m.From, true)
+			for _, u := range distinct(urls) {
+				log.Printf("url: %s\n", u)
+				parsedURL, err := url.Parse(u)
 				if err != nil {
-					log.Printf("error sending mail to: %s: %v\n", m.From, err)
+					log.Printf("url parse: %v\n", err)
+				}
+
+				f, err := reader.Fetch(parsedURL.String())
+				if err != nil {
+					log.Printf("reader fetch: %v\n", err)
+				}
+
+				article, err := reader.Readable(f, parsedURL)
+				if err == nil {
+					err = mail.SendArticle(&article, m.From, true)
+					if err != nil {
+						log.Printf("error sending mail to: %s: %v\n", m.From, err)
+					} else {
+						log.Printf("sent mail to %s: %s\n", m.From, article.Title)
+					}
 				} else {
-					log.Printf("sent mail to %s: %s\n", m.From, article.Title)
-				}
-			} else {
-				log.Printf("not readable: %s\n", err)
-				err := mail.SendArticle(&article, m.From, false)
-				if err != nil {
-					log.Printf("error sending mail to: %s: %v\n", m.From, err)
+					log.Printf("not readable: %s\n", err)
+					err := mail.SendArticle(&article, m.From, false)
+					if err != nil {
+						log.Printf("error sending mail to: %s: %v\n", m.From, err)
+					}
 				}
 			}
+		} else {
+			log.Printf("bad spf: %s", m.From)
 		}
 		w.WriteHeader(204)
 	})

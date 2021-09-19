@@ -3,6 +3,7 @@ module git.icyphox.sh/forlater/navani
 go 1.16
 
 require (
+	blitiri.com.ar/go/spf v1.2.0
 	github.com/go-shiori/go-readability v0.0.0-20210627123243-82cc33435520
 	github.com/gomodule/redigo v1.8.5
 	github.com/joegrasse/mail v1.0.0
