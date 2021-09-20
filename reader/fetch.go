@@ -29,30 +29,38 @@ func checksum(s []byte) string {
 // Fetches the web page and stores the hash of the URL against
 // the response body in cache. Returns an io.Reader.
 func Fetch(url string) (io.Reader, error) {
+	client := &http.Client{}
 	sum := checksum([]byte(url))
 	c, err := cache.NewConn()
 	if err != nil {
-		return nil, fmt.Errorf("cache error: %w", err)
+		return nil, fmt.Errorf("cache error: %w\n", err)
 	}
 
 	body, err := c.Get(sum)
 	// Not in cache.
 	if err != nil {
-		resp, err := http.Get(url)
+		req, err := http.NewRequest("GET", url, nil)
 		if err != nil {
-			return nil, fmt.Errorf("http error: %w", err)
+			return nil, fmt.Errorf("http error: %w\n", err)
 		}
+
+		req.Header.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/93.0.4577.82 Safari/537.36")
+		resp, err := client.Do(req)
+		if err != nil {
+			return nil, fmt.Errorf("http client error: %w\n", err)
+		}
+
 		buf := bytes.Buffer{}
 		// Read into r and write into buf.
 		// Cache and return!
 		r := io.TeeReader(resp.Body, &buf)
 		b, err := io.ReadAll(r)
 		if err != nil {
-			return nil, fmt.Errorf("io error: %w", err)
+			return nil, fmt.Errorf("io error: %w\n", err)
 		}
 		_, err = c.Set(sum, b)
 		if err != nil {
-			return nil, fmt.Errorf("cache error: %w", err)
+			return nil, fmt.Errorf("cache error: %w\n", err)
 		}
 		return &buf, nil
 	}
