@@ -25,12 +25,11 @@
     <style>
     img {
       max-width: 100%;
-      display: block;
     }
     </style>
 </head>
 <body style="margin:0;padding:0;word-spacing:normal;background-color:#ffffff;">
-    <div role="article" aria-roledescription="email" lang="en" style="-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%;background-color:#ffffff;">
+    <div role="article" aria-roledescription="email" lang="en" style="-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%;background-color:#ffffff;display:block;">
         <table width="100%" align="center" border="0" cellpadding="0" cellspacing="0" role="presentation">
             <tr>
                 <td align="left">
