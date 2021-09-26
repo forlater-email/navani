@@ -32,6 +32,9 @@ func SendArticle(article *reader.Article, to string, readable bool) error {
 	}
 
 	plainContent, err := reader.MakePlaintext(htmlContent)
+	if err != nil {
+		return fmt.Errorf("making plaintext: %w\n", err)
+	}
 
 	email := mail.New()
 	email.Encryption = mail.EncryptionTLS

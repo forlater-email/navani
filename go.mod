@@ -10,6 +10,6 @@ require (
 	github.com/joegrasse/mime v0.0.0-20151001172835-f543c4783e35 // indirect
 	github.com/joho/godotenv v1.3.0
 	github.com/microcosm-cc/bluemonday v1.0.15
-	golang.org/x/net v0.0.0-20210908191846-a5e095526f91 // indirect
+	golang.org/x/net v0.0.0-20210908191846-a5e095526f91
 	mvdan.cc/xurls/v2 v2.3.0
 )
