@@ -1,13 +1,11 @@
 package reader
 
 import (
-	"fmt"
 	"os/exec"
 	"strings"
 )
 
 func MakePlaintext(html []byte) ([]byte, error) {
-	fmt.Println(string(html))
 	args := []string{
 		"-dont_wrap_pre",
 		"-display_charset=UTF-8",
