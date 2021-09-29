@@ -32,12 +32,22 @@ func main() {
 				log.Printf("url parse: %v\n", err)
 			}
 
-			f, err := reader.Fetch(parsedURL.String())
+			resp, err := reader.Fetch(parsedURL.String())
 			if err != nil {
 				log.Printf("reader fetch: %v\n", err)
 			}
 
-			article, err := reader.Readable(f, parsedURL)
+			if resp.MIMEType != "text/html" {
+				err = mail.SendAttachment(resp, m.From, u)
+				if err != nil {
+					log.Printf("error sending attachment to: %s: %v\n", m.From, err)
+				} else {
+					log.Printf("sent attachment to %s: %s\n", m.From, resp.MIMEType)
+				}
+				break
+			}
+
+			article, err := reader.Readable(resp.Body, parsedURL)
 			if err == nil {
 				err = mail.SendArticle(&article, m.From, true)
 				if err != nil {

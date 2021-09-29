@@ -6,6 +6,7 @@ import (
 	"encoding/hex"
 	"fmt"
 	"io"
+	"mime"
 	"net/http"
 	"net/url"
 	"strings"
@@ -26,14 +27,19 @@ func checksum(s []byte) string {
 	return hex.EncodeToString(b)
 }
 
+type Response struct {
+	Body     io.Reader
+	MIMEType string
+}
+
 // Fetches the web page and stores the hash of the URL against
 // the response body in cache. Returns an io.Reader.
-func Fetch(url string) (io.Reader, error) {
+func Fetch(url string) (Response, error) {
 	client := &http.Client{}
 	sum := checksum([]byte(url))
 	c, err := cache.NewConn()
 	if err != nil {
-		return nil, fmt.Errorf("cache error: %w\n", err)
+		return Response{}, fmt.Errorf("cache error: %w\n", err)
 	}
 
 	body, err := c.Get(sum)
@@ -41,13 +47,27 @@ func Fetch(url string) (io.Reader, error) {
 	if err != nil {
 		req, err := http.NewRequest("GET", url, nil)
 		if err != nil {
-			return nil, fmt.Errorf("http error: %w\n", err)
+			return Response{}, fmt.Errorf("http error: %w\n", err)
 		}
 
 		req.Header.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/93.0.4577.82 Safari/537.36")
 		resp, err := client.Do(req)
 		if err != nil {
-			return nil, fmt.Errorf("http client error: %w\n", err)
+			return Response{}, fmt.Errorf("http client error: %w\n", err)
+		}
+
+		mt, _, err := mime.ParseMediaType(resp.Header.Get("Content-Type"))
+		if err != nil {
+			return Response{}, fmt.Errorf("parse mime: %w\n", err)
+		}
+
+		// If page isn't text/html, just return the body; no caching.
+		if mt != "text/html" {
+			if err != nil {
+				return Response{}, fmt.Errorf("reading non-html body: %w\n", err)
+			}
+
+			return Response{resp.Body, mt}, nil
 		}
 
 		buf := bytes.Buffer{}
@@ -56,16 +76,17 @@ func Fetch(url string) (io.Reader, error) {
 		r := io.TeeReader(resp.Body, &buf)
 		b, err := io.ReadAll(r)
 		if err != nil {
-			return nil, fmt.Errorf("io error: %w\n", err)
+			return Response{}, fmt.Errorf("io error: %w\n", err)
 		}
 		_, err = c.Set(sum, b)
 		if err != nil {
-			return nil, fmt.Errorf("cache error: %w\n", err)
+			return Response{}, fmt.Errorf("cache error: %w\n", err)
 		}
-		return &buf, nil
+		return Response{&buf, mt}, nil
 	}
 
-	return strings.NewReader(body), nil
+	// We can safely assume it's text/html
+	return Response{strings.NewReader(body), "text/html"}, nil
 }
 
 // Makes a given html body readable. Returns an error if it
