@@ -2,6 +2,7 @@ package mail
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/microcosm-cc/bluemonday"
 	"mvdan.cc/xurls/v2"
@@ -16,18 +17,18 @@ type Mail struct {
 }
 
 // TODO
-// // Strips the signature from an email.
-// func stripSignature(text string) string {
-// 	lines := strings.Split(text, "\n")
-// 	stripped := []string{}
-// 	for i := len(lines) - 1; i >= 0; i-- {
-// 		if lines[i] == "--" || lines[i] == "-- " {
-// 			break
-// 		}
-// 		stripped = append(stripped, lines[i])
-// 	}
-// 	return strings.Join(stripped, "\n")
-// }
+// Strips the signature from an email.
+func stripSignature(text string) string {
+	lines := strings.Split(text, "\n")
+	body := []string{}
+	for i := range lines {
+		body = append(body, lines[i])
+		if lines[i] == "--" || lines[i] == "-- " {
+			break
+		}
+	}
+	return strings.Join(body, "\n")
+}
 
 // Extracts URLs from given text.
 func ExtractURLs(text string) []string {
