@@ -8,6 +8,7 @@ import (
 	"os"
 
 	"git.icyphox.sh/forlater/navani/reader"
+	"git.icyphox.sh/rel2abs"
 	"github.com/joho/godotenv"
 	mail "github.com/xhit/go-simple-mail/v2"
 )
@@ -26,7 +27,12 @@ func SendArticle(article *reader.Article, to string, readable bool) error {
 		return err
 	}
 
-	plainContent, err := reader.MakePlaintext(htmlContent)
+	htmlAbs, err := rel2abs.Convert(htmlContent, article.URL.String())
+	if err != nil {
+		htmlAbs = htmlContent
+	}
+
+	plainContent, err := reader.MakePlaintext(htmlAbs)
 	if err != nil {
 		return fmt.Errorf("making plaintext: %w\n", err)
 	}
