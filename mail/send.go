@@ -45,7 +45,7 @@ func SendArticle(article *reader.Article, to string, readable bool) error {
 		email.SetBodyData(mail.TextPlain, plainContent)
 		email.AddAlternative(mail.TextHTML, string(htmlContent))
 	} else {
-		email.SetSubject(article.URL.String())
+		email.SetSubject("[forlater.email] Unable to read your link")
 		email.SetBody(mail.TextPlain, fmt.Sprintf(
 			"We were unable to parse your link: %s",
 			article.URL.String(),

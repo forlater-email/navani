@@ -56,7 +56,7 @@ func main() {
 					log.Printf("sent mail to %s: %s\n", m.From, article.Title)
 				}
 			} else {
-				log.Printf("not readable: %s\n", err)
+				log.Printf("not readable: %s: %s\n", article.URL.String(), resp.MIMEType)
 				err := mail.SendArticle(&article, m.From, false)
 				if err != nil {
 					log.Printf("error sending mail to: %s: %v\n", m.From, err)
