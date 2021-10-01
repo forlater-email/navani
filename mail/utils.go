@@ -18,7 +18,7 @@ type Mail struct {
 
 // TODO
 // Strips the signature from an email.
-func stripSignature(text string) string {
+func StripSignature(text string) string {
 	lines := strings.Split(text, "\n")
 	body := []string{}
 	for i := range lines {
@@ -39,7 +39,7 @@ func ExtractURLs(text string) []string {
 // Returns the main body of the email; hopefully containing URLs.
 func MailBody(parts map[string]string) (string, error) {
 	if plain, ok := parts["text/plain"]; ok {
-		return stripSignature(plain), nil
+		return StripSignature(plain), nil
 	} else if html, ok := parts["text/html"]; ok {
 		p := bluemonday.NewPolicy()
 		p.AllowStandardURLs()

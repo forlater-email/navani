@@ -18,7 +18,7 @@ func main() {
 		log.Printf("recieved webhook: %v\n", m.From)
 		if err != nil {
 			log.Printf("using body as is: %v\n", err)
-			body = m.Body
+			body = mail.StripSignature(m.Body)
 		}
 
 		urls := mail.ExtractURLs(body)
