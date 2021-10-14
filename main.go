@@ -37,16 +37,6 @@ func main() {
 				log.Printf("reader fetch: %v\n", err)
 			}
 
-			// if resp.MIMEType != "text/html" {
-			// 	err = mail.SendAttachment(resp, m.From, u)
-			// 	if err != nil {
-			// 		log.Printf("error sending attachment to: %s: %v\n", m.From, err)
-			// 	} else {
-			// 		log.Printf("sent attachment to %s: %s\n", m.From, resp.MIMEType)
-			// 	}
-			// 	break
-			// }
-
 			article, err := reader.Readable(resp.Body, parsedURL)
 			if (err == nil) && (resp.MIMEType == "text/html") {
 				err = mail.SendArticle(&article, m.From, true)
