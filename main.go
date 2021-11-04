@@ -38,7 +38,7 @@ func main() {
 			}
 
 			article, err := reader.Readable(resp.Body, parsedURL)
-			if (err == nil) && (resp.MIMEType == "text/html") {
+			if (err == nil) && (resp.MIMEType == "text/html" || resp.MIMEType == "text/plain" || resp.MIMEType == "html") {
 				err = mail.SendArticle(&article, m.From, true)
 				if err != nil {
 					log.Printf("error sending mail to: %s: %v\n", m.From, err)
