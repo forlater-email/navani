@@ -20,30 +20,71 @@ func init() {
 	}
 }
 
-func SendArticle(article *reader.Article, to string, readable bool) error {
-	var EMAIL_FROM = os.Getenv("EMAIL_FROM")
+func htmlMail(article *reader.Article) (*mail.Email, error) {
 	htmlContent, err := RenderTemplate("html.tpl", article)
 	if err != nil {
-		return err
+		return &mail.Email{}, err
 	}
 
 	htmlAbs, err := rel2abs.Convert(htmlContent, article.URL.String())
 	if err != nil {
-		htmlAbs = htmlContent
+		return &mail.Email{}, err
 	}
 
 	plainContent, err := reader.MakePlaintext(htmlAbs)
 	if err != nil {
-		return fmt.Errorf("making plaintext: %w\n", err)
+		return &mail.Email{}, fmt.Errorf("making plaintext: %w\n", err)
 	}
 
 	email := mail.NewMSG()
+	email.SetBodyData(mail.TextPlain, plainContent)
+	email.AddAlternative(mail.TextHTML, string(htmlContent))
+
+	return email, nil
+}
+
+func plainMail(article *reader.Article) (*mail.Email, error) {
+	email := mail.NewMSG()
+	email.SetBodyData(mail.TextPlain, []byte(article.TextContent))
+	return email, nil
+}
+
+func SendArticle(article *reader.Article, mime string, to string, readable bool) error {
+	var (
+		EMAIL_FROM = os.Getenv("EMAIL_FROM")
+		err        error
+		email      *mail.Email
+	)
+
+	switch mime {
+	case "text/html":
+		email, err = htmlMail(article)
+		if err != nil {
+			return err
+		}
+	case "html":
+		// Exception for weird sites
+		email, err = htmlMail(article)
+		if err != nil {
+			return err
+		}
+	case "text/plain":
+		email, err = plainMail(article)
+		if err != nil {
+			return err
+		}
+	default:
+		readable = false
+	}
+
 	email.SetFrom(fmt.Sprintf("saved forlater <%s>", EMAIL_FROM))
 	email.AddTo(to)
 	if readable {
-		email.SetSubject(article.Title)
-		email.SetBodyData(mail.TextPlain, plainContent)
-		email.AddAlternative(mail.TextHTML, string(htmlContent))
+		if article.Title != "" {
+			email.SetSubject(article.Title)
+		} else {
+			email.SetSubject(article.URL.String())
+		}
 	} else {
 		email.SetSubject("[forlater.email] Unable to read your link")
 		email.SetBody(mail.TextPlain, fmt.Sprintf(

@@ -38,8 +38,8 @@ func main() {
 			}
 
 			article, err := reader.Readable(resp.Body, parsedURL)
-			if (err == nil) && (resp.MIMEType == "text/html" || resp.MIMEType == "text/plain" || resp.MIMEType == "html") {
-				err = mail.SendArticle(&article, m.From, true)
+			if err == nil {
+				err = mail.SendArticle(&article, resp.MIMEType, m.From, true)
 				if err != nil {
 					log.Printf("error sending mail to: %s: %v\n", m.From, err)
 				} else {
@@ -47,7 +47,7 @@ func main() {
 				}
 			} else {
 				log.Printf("not readable: %s: %s\n", article.URL.String(), resp.MIMEType)
-				err := mail.SendArticle(&article, m.From, false)
+				err := mail.SendArticle(&article, resp.MIMEType, m.From, false)
 				if err != nil {
 					log.Printf("error sending mail to: %s: %v\n", m.From, err)
 				}
